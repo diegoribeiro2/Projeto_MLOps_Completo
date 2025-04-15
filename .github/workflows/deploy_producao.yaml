@@ -1,0 +1,42 @@
+name: deploy
+
+on:
+  # merge na branch master
+  # push:
+  #   branches:
+  #     - master
+  # Permite executar este fluxo de trabalho manualmente na guia Actions
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # Usado para solicitar o JWT
+  contents: read    # Usado para actions/checkout
+
+jobs:
+  teste:
+    runs-on: ubuntu-latest
+    steps:
+      - name: clonar o repositório
+        uses: actions/checkout@v4
+      - name: teste
+        run: |
+          echo "testes aqui"
+
+  deploy-producao:
+    runs-on: ubuntu-latest
+    needs: teste
+    steps:
+      - name: configurar just
+        uses: extractions/setup-just@v1
+      - name: clonar o repositório
+        uses: actions/checkout@v4
+      - name: configurar Terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: configurar aws credentials
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          role-to-assume: arn:aws:iam::194722415521:role/administrador
+          role-session-name: samplerolesession
+          aws-region: us-east-2
+      - name: colocar em producao
+        run: just up
