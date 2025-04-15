@@ -33,35 +33,80 @@ Este projeto implementa uma arquitetura completa de **MLOps na AWS**, integrando
 ## 🧩 Etapas da Implementação
 
 ### 1. Provisionamento com Terraform
+Antes de criar os recursos, definimos o provedor AWS no arquivo main.tf, especificando a região onde os serviços serão implantados.
+
+Por que isso é importante?
+
+O Terraform precisa saber em qual região da AWS os recursos serão provisionados.
+Garante que toda a infraestrutura seja criada de forma consistente:
+
 - Configuração do provedor AWS
 - Criação das instâncias EC2, RDS e buckets S3
 - Scripts de inicialização automatizados com injeção de variáveis
 
 ### 2. Configuração do MLflow
-- Container Docker configurado na EC2
-- Conexão segura com RDS para armazenar metadados
+O MLflow é responsável por rastrear experimentos e modelos. Para isso:
+
+Usamos uma instância EC2 para facilitar o deploy.
+O MLflow é configurado para se conectar a um banco de dados RDS (PostgreSQL), onde armazena metadados.
+
+Como a conexão MLflow → RDS funciona?
+O Terraform automaticamente injeta o endpoint do RDS no script de inicialização da EC2.
+O MLflow usa essa conexão para persistir experimentos, parâmetros e métricas.
+
+Os modelos são armazenadas em um bucket S3
 
 ### 3. Setup do Airflow
-- Instância EC2 dedicada com recursos otimizados (t3.small)
-- Integração com RDS em schema separado (`airflow`)
-- DAGs armazenadas no bucket S3
+O Airflow gerencia pipelines de dados (DAGs). Para sua configuração:
+
+Utilizamos uma instância EC2 um pouco mais robusta (t3.small) devido ao maior consumo de memória.
+Assim como o MLflow, o Airflow se conecta ao mesmo RDS, mas em um schema diferente (airflow).
+
+Qual a vantagem de usar RDS compartilhado?
+Reduz custos, pois um único banco de dados serve a dois sistemas.
+Facilita o gerenciamento de backups e monitoramento.
+
+As DAGs são armazenadas em um bucket S3
 
 ### 4. Deploy da API (FastAPI + Streamlit)
-- FastAPI para servir modelos treinados diretamente via MLflow
-- Streamlit para dashboards interativos
-- Comunicação via `MLFLOW_TRACKING_URI` apontando para a EC2 do MLflow
+Esta instância hospeda:
+
+- FastAPI: API REST para servir modelos treinados.
+- Streamlit: Interface interativa para visualização de resultados.
+
+Como a API se comunica com o MLflow?
+O código da FastAPI configura o MLFLOW_TRACKING_URI para apontar para a EC2 do MLflow.
+Isso permite registrar e recuperar modelos diretamente do servidor de tracking.
 
 ### 5. Banco de Dados RDS
-- PostgreSQL com schemas separados para MLflow e Airflow
-- Alto desempenho e suporte nativo
+Um banco PostgreSQL é criado para armazenar:
+
+- Metadados do MLflow (experimentos, runs, modelos).
+- Metadados do Airflow (DAGs, tarefas, histórico de execução).
+
+Por que PostgreSQL?
+
+É suportado nativamente pelo MLflow e Airflow.
+Oferece bom desempenho para operações de metadados.
 
 ### 6. Buckets S3
-- `mlflow-artifacts-bucket`: modelos e artefatos
-- `airflow-dags-bucket`: pipelines (DAGs)
+Dois buckets são provisionados:
+
+- mlflow-artifacts-bucket: Armazena modelos treinados e artefatos.
+- airflow-dags-bucket: Contém os scripts de pipeline (DAGs) do Airflow.
+
+Vantagens do uso do S3:
+
+Durabilidade e alta disponibilidade e Integração nativa com MLflow e Airflow.
 
 ### 7. CI/CD com GitHub Actions
-- Workflow automatizado dispara `terraform apply` ao detectar push
-- Secrets protegidos no GitHub para armazenar chaves AWS
+Para evitar deploy manual, configuramos um workflow no GitHub Actions que:
+
+Aplica o Terraform automaticamente ao detectar um push no repositório.
+Usa secrets para armazenar credenciais da AWS de forma segura.
+
+
+A infraestrutura é atualizada sem intervenção manual.
 
 ---
 
