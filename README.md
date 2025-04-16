@@ -11,7 +11,7 @@ Este projeto implementa uma arquitetura completa de **MLOps na AWS**, integrando
 - **MLflow** – Rastreamento de experimentos e modelos
 - **Airflow** – Orquestração de pipelines de machine learning
 - **FastAPI** – Servidor REST para servir modelos
-- **Streamlit** – Dashboard para visualização de resultados
+- **Streamlit** – Interface interativa para visualização de resultados.
 - **RDS (PostgreSQL)** – Armazenamento de metadados
 - **S3** – Repositório de modelos e DAGs
 
@@ -23,7 +23,7 @@ Este projeto implementa uma arquitetura completa de **MLOps na AWS**, integrando
 |--------------------|--------------------------|------------------------------------------------------|
 | Servidor de Tracking | MLflow (EC2)           | Registro e versionamento de experimentos e modelos  |
 | Orquestrador        | Airflow (EC2)           | Agendamento e execução das DAGs de ML               |
-| API/Interface       | FastAPI + Streamlit (EC2)| Disponibilização dos modelos e dashboards           |
+| API/Interface       | FastAPI + Streamlit (EC2)| Disponibilização dos modelos e visualização        |
 | Banco de Dados      | RDS (PostgreSQL)        | Armazenamento de metadados (MLflow e Airflow)       |
 | Armazenamento       | S3                      | Buckets para artefatos do MLflow e DAGs do Airflow  |
 | CI/CD               | GitHub Actions          | Automatização do deploy via Terraform               |
