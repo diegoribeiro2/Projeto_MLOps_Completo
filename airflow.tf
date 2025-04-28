@@ -84,8 +84,7 @@ resource "aws_instance" "airflow-server" {
     # copiar os dags do bucket para a pasta de dags
     aws s3 cp s3://${aws_s3_bucket.airflow-dags.bucket} /home/ec2-user/airflow/dags/ --recursive
 
-    airflow webserver -p 8080 -D
-    airflow scheduler
+    nohup airflow standalone --port 8080 > /home/ec2-user/airflow/standalone.log 2>&1 &
 
     EOL
   EOF
