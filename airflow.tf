@@ -65,6 +65,7 @@ resource "aws_instance" "airflow-server" {
     pip install 'apache-airflow[amazon]'
     pip install psycopg2-binary
     pip install virtualenv
+    pip install asyncpg 
     pip install --upgrade transformers
     pip install torch 
 
