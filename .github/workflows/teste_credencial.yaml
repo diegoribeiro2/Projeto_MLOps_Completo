@@ -1,0 +1,27 @@
+# checa se as credenciais com o OpenID connect foram setadas corretamente
+name: 
+  teste-credencial
+on:
+  # Permite executar este fluxo de trabalho manualmente na guia Actions
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # Usado para solicitar o JWT
+  contents: read    # Usado para actions/checkout
+
+
+jobs:
+  testar-creds:
+    runs-on: ubuntu-latest
+    steps:
+      - name: clonar o repositorio
+        uses: actions/checkout@v4
+      - name: configurar aws credentials
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          role-to-assume: arn:aws:iam::194722415521:role/administrador
+          role-session-name: samplerolesession
+          aws-region: us-east-2
+      - name:  listar arquivos s3
+        run: |
+          aws s3 ls
