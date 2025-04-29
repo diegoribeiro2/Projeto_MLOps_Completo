@@ -19,6 +19,8 @@ Este projeto implementa uma arquitetura completa de **MLOps na AWS**, integrando
 
 ## ⚙️ Visão Geral da Arquitetura
 
+![Descrição da imagem](arquitetura_projeto.png)  
+
 | Componente         | Tecnologia              | Função Principal                                     |
 |--------------------|--------------------------|------------------------------------------------------|
 | Servidor de Tracking | MLflow (EC2)           | Registro e versionamento de experimentos e modelos  |
