@@ -62,10 +62,9 @@ resource "aws_instance" "airflow-server" {
     source /home/ec2-user/airflow/venv/bin/activate
 
     pip install --upgrade pip
-    pip install 'apache-airflow[amazon]'
+    pip install 'apache-airflow[amazon]==2.10.5'
     pip install psycopg2-binary
     pip install virtualenv
-    pip install asyncpg 
     pip install --upgrade transformers
     pip install torch 
 
@@ -87,7 +86,7 @@ resource "aws_instance" "airflow-server" {
 
     airflow webserver -p 8080 -D
     airflow scheduler
-
+    
     EOL
   EOF
 }
